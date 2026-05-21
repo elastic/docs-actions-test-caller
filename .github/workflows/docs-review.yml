@@ -1,0 +1,15 @@
+name: Docs Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issue_comment:
+    types: [created]
+
+jobs:
+  docs-review:
+    uses: elastic/docs-actions/.github/workflows/gh-aw-docs-review.lock.yml@test/gh-aw-staging
+    with:
+      review-scope: repo-wide-markdown
+    secrets:
+      COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
