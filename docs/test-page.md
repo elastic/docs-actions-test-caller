@@ -11,7 +11,7 @@ products:
 
 # Test page
 
-This page exists to give the docs review and sweep workflows something to scan.
+This page exists to give the docs review and sweep workflows something to scan. It is very easy to use and simply shows how to utilize Elasticsearch.
 
 ## Overview
 
