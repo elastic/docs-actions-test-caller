@@ -1,0 +1,20 @@
+name: Docs Coherence Sweep
+
+on:
+  workflow_dispatch:
+    inputs:
+      docs-root:
+        description: Root directory to sweep
+        default: docs/
+      scope-mode:
+        description: "Scope mode: auto, full, or shard"
+        default: full
+
+jobs:
+  coherence-sweep:
+    uses: elastic/docs-actions/.github/workflows/gh-aw-docs-coherence-sweep.lock.yml@test/gh-aw-staging
+    with:
+      docs-root: ${{ inputs.docs-root }}
+      scope-mode: ${{ inputs.scope-mode }}
+    secrets:
+      COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}

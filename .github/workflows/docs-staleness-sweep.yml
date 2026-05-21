@@ -1,0 +1,28 @@
+name: Docs Staleness Sweep
+
+on:
+  workflow_dispatch:
+    inputs:
+      docs-root:
+        description: Root directory to sweep
+        default: docs/
+      scope-mode:
+        description: "Scope mode: auto, full, or shard"
+        default: full
+      stale-content-months:
+        description: Months before content is considered stale
+        default: "12"
+      stale-screenshot-min-gap-months:
+        description: Minimum months between screenshot staleness reports
+        default: "6"
+
+jobs:
+  staleness-sweep:
+    uses: elastic/docs-actions/.github/workflows/gh-aw-docs-staleness-sweep.lock.yml@test/gh-aw-staging
+    with:
+      docs-root: ${{ inputs.docs-root }}
+      scope-mode: ${{ inputs.scope-mode }}
+      stale-content-months: ${{ inputs.stale-content-months }}
+      stale-screenshot-min-gap-months: ${{ inputs.stale-screenshot-min-gap-months }}
+    secrets:
+      COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
