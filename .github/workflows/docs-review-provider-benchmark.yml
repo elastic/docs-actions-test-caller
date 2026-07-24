@@ -1,17 +1,9 @@
 name: Docs review provider benchmark
-run-name: Docs review benchmark ${{ inputs.trial_label }} on PR #${{ inputs.pull_request_number }}
+run-name: Docs review benchmark on PR #${{ github.event.issue.number }}
 
 on:
-  workflow_dispatch:
-    inputs:
-      pull_request_number:
-        description: Pull request containing the benchmark documentation change.
-        required: true
-        type: number
-      trial_label:
-        description: Label used to identify this paired trial.
-        required: true
-        type: string
+  issue_comment:
+    types: [created]
 
 permissions:
   actions: read
@@ -24,17 +16,11 @@ permissions:
 jobs:
   copilot:
     name: Native Copilot
+    if: >-
+      github.event.issue.pull_request != null &&
+      startsWith(github.event.comment.body, '/provider-benchmark')
     uses: elastic/docs-actions/.github/workflows/gh-aw-docs-review.lock.yml@cd443a815c893c682545ff68cf9be77032776ca9
     with:
-      aw_context: >-
-        {"repo":"${{ github.repository }}","run_id":"${{ github.run_id }}","workflow_id":"${{ github.workflow_ref }}","workflow_call_id":"${{ github.run_id }}-${{ github.run_attempt }}-copilot","time":"${{ github.event.repository.updated_at }}","actor":"${{ github.actor }}","event_type":"workflow_dispatch","item_type":"pull_request","item_number":${{ inputs.pull_request_number }},"comment_id":"","comment_node_id":"","allow-bot-authored-trigger-comment":true,"otel_trace_id":"","otel_parent_span_id":""}
-      setup-commands: |
-        event_tmp="$(mktemp)"
-        jq --argjson pr_number '${{ inputs.pull_request_number }}' \
-          '.pull_request = {"number": $pr_number}' \
-          "$GITHUB_EVENT_PATH" > "$event_tmp"
-        cp "$event_tmp" "$GITHUB_EVENT_PATH"
-        rm "$event_tmp"
       review-scope: docs-subtree
       additional-instructions: |
         This is a controlled provider benchmark. Review the triggering pull request normally and apply the complete review rubric without reducing depth.
@@ -42,17 +28,11 @@ jobs:
 
   litellm:
     name: LiteLLM
+    if: >-
+      github.event.issue.pull_request != null &&
+      startsWith(github.event.comment.body, '/provider-benchmark')
     uses: elastic/docs-actions/.github/workflows/gh-aw-docs-review.lock.yml@36b83d2c5d78223ba55e403864d5bc0203c077c4
     with:
-      aw_context: >-
-        {"repo":"${{ github.repository }}","run_id":"${{ github.run_id }}","workflow_id":"${{ github.workflow_ref }}","workflow_call_id":"${{ github.run_id }}-${{ github.run_attempt }}-litellm","time":"${{ github.event.repository.updated_at }}","actor":"${{ github.actor }}","event_type":"workflow_dispatch","item_type":"pull_request","item_number":${{ inputs.pull_request_number }},"comment_id":"","comment_node_id":"","allow-bot-authored-trigger-comment":true,"otel_trace_id":"","otel_parent_span_id":""}
-      setup-commands: |
-        event_tmp="$(mktemp)"
-        jq --argjson pr_number '${{ inputs.pull_request_number }}' \
-          '.pull_request = {"number": $pr_number}' \
-          "$GITHUB_EVENT_PATH" > "$event_tmp"
-        cp "$event_tmp" "$GITHUB_EVENT_PATH"
-        rm "$event_tmp"
       review-scope: docs-subtree
       additional-instructions: |
         This is a controlled provider benchmark. Review the triggering pull request normally and apply the complete review rubric without reducing depth.
