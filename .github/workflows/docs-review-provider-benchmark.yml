@@ -28,6 +28,13 @@ jobs:
     with:
       aw_context: >-
         {"repo":"${{ github.repository }}","run_id":"${{ github.run_id }}","workflow_id":"${{ github.workflow_ref }}","workflow_call_id":"${{ github.run_id }}-${{ github.run_attempt }}-copilot","time":"${{ github.event.repository.updated_at }}","actor":"${{ github.actor }}","event_type":"workflow_dispatch","item_type":"pull_request","item_number":${{ inputs.pull_request_number }},"comment_id":"","comment_node_id":"","allow-bot-authored-trigger-comment":true,"otel_trace_id":"","otel_parent_span_id":""}
+      setup-commands: |
+        event_tmp="$(mktemp)"
+        jq --argjson pr_number '${{ inputs.pull_request_number }}' \
+          '.pull_request = {"number": $pr_number}' \
+          "$GITHUB_EVENT_PATH" > "$event_tmp"
+        cp "$event_tmp" "$GITHUB_EVENT_PATH"
+        rm "$event_tmp"
       review-scope: docs-subtree
       additional-instructions: |
         This is a controlled provider benchmark. Review the triggering pull request normally and apply the complete review rubric without reducing depth.
@@ -39,6 +46,13 @@ jobs:
     with:
       aw_context: >-
         {"repo":"${{ github.repository }}","run_id":"${{ github.run_id }}","workflow_id":"${{ github.workflow_ref }}","workflow_call_id":"${{ github.run_id }}-${{ github.run_attempt }}-litellm","time":"${{ github.event.repository.updated_at }}","actor":"${{ github.actor }}","event_type":"workflow_dispatch","item_type":"pull_request","item_number":${{ inputs.pull_request_number }},"comment_id":"","comment_node_id":"","allow-bot-authored-trigger-comment":true,"otel_trace_id":"","otel_parent_span_id":""}
+      setup-commands: |
+        event_tmp="$(mktemp)"
+        jq --argjson pr_number '${{ inputs.pull_request_number }}' \
+          '.pull_request = {"number": $pr_number}' \
+          "$GITHUB_EVENT_PATH" > "$event_tmp"
+        cp "$event_tmp" "$GITHUB_EVENT_PATH"
+        rm "$event_tmp"
       review-scope: docs-subtree
       additional-instructions: |
         This is a controlled provider benchmark. Review the triggering pull request normally and apply the complete review rubric without reducing depth.
