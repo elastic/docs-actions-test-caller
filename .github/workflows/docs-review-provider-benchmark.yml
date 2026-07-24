@@ -1,0 +1,46 @@
+name: Docs review provider benchmark
+run-name: Docs review benchmark ${{ inputs.trial_label }} on PR #${{ inputs.pull_request_number }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      pull_request_number:
+        description: Pull request containing the benchmark documentation change.
+        required: true
+        type: number
+      trial_label:
+        description: Label used to identify this paired trial.
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+  copilot-requests: write
+  discussions: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  copilot:
+    name: Native Copilot
+    uses: elastic/docs-actions/.github/workflows/gh-aw-docs-review.lock.yml@cd443a815c893c682545ff68cf9be77032776ca9
+    with:
+      aw_context: >-
+        {"repo":"${{ github.repository }}","run_id":"${{ github.run_id }}","workflow_id":"${{ github.workflow_ref }}","workflow_call_id":"${{ github.run_id }}-${{ github.run_attempt }}-copilot","time":"${{ github.event.repository.updated_at }}","actor":"${{ github.actor }}","event_type":"workflow_dispatch","item_type":"pull_request","item_number":${{ inputs.pull_request_number }},"comment_id":"","comment_node_id":"","allow-bot-authored-trigger-comment":true,"otel_trace_id":"","otel_parent_span_id":""}
+      review-scope: docs-subtree
+      additional-instructions: |
+        This is a controlled provider benchmark. Review the triggering pull request normally and apply the complete review rubric without reducing depth.
+    secrets: inherit
+
+  litellm:
+    name: LiteLLM
+    uses: elastic/docs-actions/.github/workflows/gh-aw-docs-review.lock.yml@36b83d2c5d78223ba55e403864d5bc0203c077c4
+    with:
+      aw_context: >-
+        {"repo":"${{ github.repository }}","run_id":"${{ github.run_id }}","workflow_id":"${{ github.workflow_ref }}","workflow_call_id":"${{ github.run_id }}-${{ github.run_attempt }}-litellm","time":"${{ github.event.repository.updated_at }}","actor":"${{ github.actor }}","event_type":"workflow_dispatch","item_type":"pull_request","item_number":${{ inputs.pull_request_number }},"comment_id":"","comment_node_id":"","allow-bot-authored-trigger-comment":true,"otel_trace_id":"","otel_parent_span_id":""}
+      review-scope: docs-subtree
+      additional-instructions: |
+        This is a controlled provider benchmark. Review the triggering pull request normally and apply the complete review rubric without reducing depth.
+    secrets:
+      DOCS_LITELLM_API_KEY: ${{ secrets.LITELLM_API_KEY }}
